@@ -13,7 +13,7 @@ import { IConstantFlowAgreementV1 } from "@superfluid-finance/ethereum-contracts
 /// @dev Constant Flow Agreement registration key, used to get the address from the host.
 bytes32 constant CFA_ID = keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1");
 
-contract Flower is SuperAppBase, ERC721 {
+contract Flower is ERC721, SuperAppBase {
 
     error InvalidToken();
     error InvalidAgreement();
@@ -67,7 +67,7 @@ contract Flower is SuperAppBase, ERC721 {
 
         cfaLib = CFAv1Library.InitData({
             host: _host,
-            cfa: IConstantFlowAgreementV1(address(_host.getAgreementClass(CFA_ID)))
+            cfa: _cfa
         });
 
         stageAmounts = _stageAmounts;
@@ -119,27 +119,31 @@ contract Flower is SuperAppBase, ERC721 {
 
     }
 
+
     function afterAgreementCreated(
         ISuperToken superToken,
         address agreementClass,
         bytes32 /*agreementId*/,
         bytes calldata agreementData,
+        bytes calldata /*cbdata*/,
         bytes calldata ctx
     )
         external
-        override(SuperAppBase)
+        override
         onlyHost()
         onlyExpected(superToken, agreementClass)
-        returns (bytes memory /*cbdata*/)
+        returns (bytes memory /*newCtx*/)
     {
         // get flow sender
         (address flowSender, ) = abi.decode(agreementData, (address, address));
 
         // get token id for flow sender
-        uint256 tokenId = flowerOwned[flowSender];
+        // uint256 _tokenId = flowerOwned[flowSender];
 
         // if the flow sender DOESN'T already have a flower
-        if ( tokenId == 0 ) {
+        if ( flowerOwned[flowSender] == 0 ) {
+
+            tokenId++;
 
             // mint flower to flow sender
             _mint(flowSender, tokenId);
@@ -152,8 +156,7 @@ contract Flower is SuperAppBase, ERC721 {
         // update the info for the flow sender's flower
         callbackflowerUpdate(flowSender, tokenId);   
 
-        return ctx;     
-
+        return ctx;  
     }
 
     function afterAgreementUpdated(
@@ -161,15 +164,15 @@ contract Flower is SuperAppBase, ERC721 {
         address agreementClass,
         bytes32 /*agreementId*/,
         bytes calldata agreementData,
+        bytes calldata /*cbdata*/,
         bytes calldata ctx
     )
         external
-        override(SuperAppBase)
+        override
         onlyHost()
         onlyExpected(superToken, agreementClass)
-        returns (bytes memory /*cbdata*/)
+        returns (bytes memory /*newCtx*/)
     {
-
         // get flow sender
         (address flowSender, ) = abi.decode(agreementData, (address, address));
 
@@ -180,23 +183,22 @@ contract Flower is SuperAppBase, ERC721 {
         callbackflowerUpdate(flowSender, tokenId); 
 
         return ctx;
-
     }
 
-    function afterAgreementDeleted(
+    function afterAgreementTerminated(
         ISuperToken superToken,
         address agreementClass,
         bytes32 /*agreementId*/,
         bytes calldata agreementData,
+        bytes calldata /*cbdata*/,
         bytes calldata ctx
     )
         external
-        override(SuperAppBase)
+        override
         onlyHost()
         onlyExpected(superToken, agreementClass)
-        returns (bytes memory /*cbdata*/)
+        returns (bytes memory /*newCtx*/)
     {
-
         // get flow sender
         (address flowSender, ) = abi.decode(agreementData, (address, address));
 
@@ -207,7 +209,6 @@ contract Flower is SuperAppBase, ERC721 {
         callbackflowerUpdate(flowSender, tokenId); 
 
         return ctx;
-    
     }
 
 
@@ -218,7 +219,7 @@ contract Flower is SuperAppBase, ERC721 {
         address from,
         address to,
         uint256 tokenId
-    ) internal override(ERC721) {
+    ) internal {
 
         // if it's a transfer
         if ( from != address(0) ) {
@@ -249,12 +250,10 @@ contract Flower is SuperAppBase, ERC721 {
 
     function getStreamedSoFar(uint256 tokenId) public view returns(uint256) {
 
-        // TODO: figure out type conversion on this math
         return flowerProfiles[tokenId].streamedSoFar + ( ( block.timestamp - flowerProfiles[tokenId].latestFlowMod ) * uint(int(flowerProfiles[tokenId].flowRate)) );
 
     }
 
-    // TODO:
     /**
     @notice Overrides tokenURI
     @param tokenId token ID of NFT being queried
@@ -272,7 +271,7 @@ contract Flower is SuperAppBase, ERC721 {
 
         // iterate down levels and see which stage the token id has reached
         uint256 stageAmount = stageAmounts[0];
-        for( uint256 i = 1; i < 3; ) {
+        for( uint256 i = 0; i < 2; ) {
 
             // if amount streamed so far is under the stage's amount
             if (streamedSoFar < stageAmount) {
@@ -282,7 +281,6 @@ contract Flower is SuperAppBase, ERC721 {
             } else {
                 // increase probability sum to include next level
                 stageAmount += stageAmounts[i];
-                console.log(stageAmount);
             }
 
             // and then we iterate again, seeing if it's under the new stageAmount, and if not, the cycle repeats
@@ -290,6 +288,10 @@ contract Flower is SuperAppBase, ERC721 {
             unchecked{ i++; }
 
         }
+
+
+        // if it's cleared the first two levels, then level 3 is everything beyond, so just return it
+        return stageMetadatas[2];
 
     }
 
