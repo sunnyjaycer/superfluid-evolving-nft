@@ -7,7 +7,7 @@ import "hardhat/console.sol";
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { CFAv1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol";
 import { SuperAppBase } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
-import { ISuperfluid, ISuperToken, ISuperApp, ISuperAgreement, SuperAppDefinitions } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { ISuperfluid, ISuperToken, SuperAppDefinitions } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 import { IConstantFlowAgreementV1 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
 /// @dev Constant Flow Agreement registration key, used to get the address from the host.
@@ -29,15 +29,15 @@ contract Flower is ERC721, SuperAppBase {
         uint256 latestFlowMod;
         // current flow rate for the flower
         int96 flowRate;
-        // amount of water streamed to flower so far - recorded upon a flow modification
-        uint256 streamedSoFar;
+        // amount of water streamed to flower so far upon a flow modification (created/update/delete)
+        uint256 streamedSoFarAtLatestMod;
     } 
 
     /// @dev mapping flower nft ids to flower profile info
-    mapping(uint256 => FlowerProfile) flowerProfiles;
+    mapping(uint256 => FlowerProfile) public flowerProfiles;
 
     /// @dev mapping of accounts to their flowers
-    mapping(address => uint256) flowerOwned;
+    mapping(address => uint256) public flowerOwned;
 
     /// @dev metadata for each stage of growth for flower NFTs
     string[3] public stageMetadatas = [
@@ -102,24 +102,6 @@ contract Flower is ERC721, SuperAppBase {
     // ---------------------------------------------------------------------------------------------
     // CALLBACK LOGIC
 
-    function callbackflowerUpdate(address flowSender, uint256 tokenId) internal {
-
-        // settle time delta * flow rate over that duration to streamedSoFar
-        flowerProfiles[tokenId].streamedSoFar += ( block.timestamp - flowerProfiles[tokenId].latestFlowMod ) * uint(int(flowerProfiles[tokenId].flowRate));
-        
-        // set flowRate to new flow rate
-        (,flowerProfiles[tokenId].flowRate,,) = cfaLib.cfa.getFlow(
-            acceptedToken,  // super token being streamed
-            flowSender,     // sender
-            address(this)   // receiver
-        );
-
-        // set latestFlowMod to current time stamp
-        flowerProfiles[tokenId].latestFlowMod = block.timestamp;
-
-    }
-
-
     function afterAgreementCreated(
         ISuperToken superToken,
         address agreementClass,
@@ -154,7 +136,7 @@ contract Flower is ERC721, SuperAppBase {
         }
 
         // update the info for the flow sender's flower
-        callbackflowerUpdate(flowSender, tokenId);   
+        flowerUpdate(flowSender, tokenId);   
 
         return ctx;  
     }
@@ -180,7 +162,7 @@ contract Flower is ERC721, SuperAppBase {
         uint256 tokenId = flowerOwned[flowSender];
 
         // update the info for the flow sender's flower
-        callbackflowerUpdate(flowSender, tokenId); 
+        flowerUpdate(flowSender, tokenId); 
 
         return ctx;
     }
@@ -206,10 +188,29 @@ contract Flower is ERC721, SuperAppBase {
         uint256 tokenId = flowerOwned[flowSender];
 
         // update the info for the flow sender's flower
-        callbackflowerUpdate(flowSender, tokenId); 
+        flowerUpdate(flowSender, tokenId); 
 
         return ctx;
     }
+
+
+    function flowerUpdate(address flowSender, uint256 tokenId) internal {
+
+        // update streamedSoFarAtLatestMod to current value of streamedSoFar 
+        flowerProfiles[tokenId].streamedSoFarAtLatestMod = streamedSoFar(tokenId);
+        
+        // set flowRate to new flow rate
+        (,flowerProfiles[tokenId].flowRate,,) = cfaLib.cfa.getFlow(
+            acceptedToken,  // super token being streamed
+            flowSender,     // sender
+            address(this)   // receiver
+        );
+
+        // set latestFlowMod to current time stamp
+        flowerProfiles[tokenId].latestFlowMod = block.timestamp;
+
+    }
+
 
 
     // ---------------------------------------------------------------------------------------------
@@ -218,8 +219,9 @@ contract Flower is ERC721, SuperAppBase {
     function _beforeTokenTransfer(
         address from,
         address to,
-        uint256 tokenId
-    ) internal {
+        uint256 firstTokenId, /* firstTokenId */
+        uint256 /* batchSize */
+    ) internal override {
 
         // if it's a transfer
         if ( from != address(0) ) {
@@ -235,11 +237,11 @@ contract Flower is ERC721, SuperAppBase {
             );
 
             // update the flower's info
-            callbackflowerUpdate(from, tokenId);
+            flowerUpdate(from, firstTokenId);
 
             // update ownership
             flowerOwned[from] = 0;
-            flowerOwned[to] = tokenId;
+            flowerOwned[to] = firstTokenId;
 
         }
 
@@ -248,17 +250,21 @@ contract Flower is ERC721, SuperAppBase {
     // ---------------------------------------------------------------------------------------------
     // Read functions
 
-    function getStreamedSoFar(uint256 tokenId) public view returns(uint256) {
+    /// @notice Returns how much has been streamed so far to grow a certain Flower
+    /// @param tokenId ID of Flower NFT being queried
+    function streamedSoFar(uint256 tokenId) public view returns(uint256) {
 
-        return flowerProfiles[tokenId].streamedSoFar + ( ( block.timestamp - flowerProfiles[tokenId].latestFlowMod ) * uint(int(flowerProfiles[tokenId].flowRate)) );
+        // seconds passed since last flow modification* tokens/second flow rate = tokens streamed since last flow modification
+        uint256 streamedSinceLatestMod = uint(int(flowerProfiles[tokenId].flowRate)) * ( block.timestamp - flowerProfiles[tokenId].latestFlowMod );
+
+        // amount streamed up until last modification (held staticly in mapping) + amount streamed since mod (changing per-second w/ rising block.timestamp)
+        return flowerProfiles[tokenId].streamedSoFarAtLatestMod + streamedSinceLatestMod;
 
     }
 
-    /**
-    @notice Overrides tokenURI
-    @param tokenId token ID of NFT being queried
-    @return token URI
-    */
+    /// @notice Overrides tokenURI
+    /// @param tokenId token ID of NFT being queried
+    /// @return token URI
     function tokenURI(uint256 tokenId)
         public
         view
@@ -267,14 +273,14 @@ contract Flower is ERC721, SuperAppBase {
     {
 
         // get amount streamed so far
-        uint256 streamedSoFar = getStreamedSoFar(tokenId);
+        uint256 _streamedSoFar = streamedSoFar(tokenId);
 
         // iterate down levels and see which stage the token id has reached
         uint256 stageAmount = stageAmounts[0];
-        for( uint256 i = 0; i < 2; ) {
+        for( uint256 i = 0; i < 2; i++) {
 
             // if amount streamed so far is under the stage's amount
-            if (streamedSoFar < stageAmount) {
+            if (_streamedSoFar < stageAmount) {
                 // it's within that tier, so return stage metadata
                 return stageMetadatas[i];
             // else, the random number is above probability level
@@ -282,10 +288,6 @@ contract Flower is ERC721, SuperAppBase {
                 // increase probability sum to include next level
                 stageAmount += stageAmounts[i];
             }
-
-            // and then we iterate again, seeing if it's under the new stageAmount, and if not, the cycle repeats
-
-            unchecked{ i++; }
 
         }
 
