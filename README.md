@@ -26,3 +26,9 @@ Interacting with the [Flower NFT Contract](./contracts/Flower.sol) is simple - y
 The Flower contract reacts and mints a Flower NFT to your address. As your stream goes on, the metadata of the Flower NFT will graduate images as the amount you've streamed so far into the contract increases. You can increase/decrease your flow rate or delete your stream as you please!
 
 Addresses can only have one Flower NFT at once. If you transfer your Flower to another address (that doesn't already have a Flower), you will have your `acceptedToken` stream automatically cancelled if you haven't already done so. The metadata on the NFT will be unchanged (not reset to the first image) after the transfer.
+
+## Try it out live on Goerli Testnet 🎬
+
+1. Clone the repo and build with `npm install`
+Mint some WATERx tokens
+2. Build the 

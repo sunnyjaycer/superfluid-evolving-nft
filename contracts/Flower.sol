@@ -41,9 +41,9 @@ contract Flower is ERC721, SuperAppBase {
 
     /// @dev metadata for each stage of growth for flower NFTs
     string[3] public stageMetadatas = [
-        "https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant1.png",
-        "https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant2.png",
-        "https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant3.png"
+        "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant1.json",
+        "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant2.json",
+        "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json"
     ];
 
     /// @dev how much seconds must pass for each stage of growth
@@ -53,7 +53,7 @@ contract Flower is ERC721, SuperAppBase {
     uint256 public tokenId;
 
     /// @dev Super token that may be streamed to this contract
-    ISuperToken internal immutable acceptedToken;
+    ISuperToken public immutable acceptedToken;
 
     constructor(
         uint256[3] memory _stageAmounts,

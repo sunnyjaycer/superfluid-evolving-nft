@@ -240,7 +240,7 @@ describe("Money Router", function () {
             await flower.flowerOwned(alice.address)
         ).to.eq(1);
 
-        // expect Flower profile data to be updated
+        // expect Flower profile data to be updated: latestFlowMod, flowRate, streamedSoFarAtLatestMod
         let flowerProf = await flower.flowerProfiles("1");
         expect(
             flowerProf.latestFlowMod

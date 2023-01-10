@@ -8,16 +8,20 @@ const hre = require("hardhat");
 
 async function main() {
 
-  const Lock = await hre.ethers.getContractFactory("Flower");
-  const lock = await Lock.deploy(
-    
+  const Token = await hre.ethers.getContractFactory("TestToken");
+  const token = await Token.deploy(
+    "Water",
+    "WATER",
+    "18",
+    hre.ethers.constants.MaxUint256
   );
 
-  await lock.deployed();
+  await token.deployed();
 
   console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    `Token Contract deployed to ${token.address}`
   );
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -26,3 +30,5 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+// https://goerli.etherscan.io/address/0xE99Eecb5D6fCaE4f091Ea4d5fED613843939272A
