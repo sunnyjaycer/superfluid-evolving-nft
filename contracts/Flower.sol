@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { CFAv1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol";
+import { SuperTokenV1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
 import { SuperAppBase } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
 import { ISuperfluid, ISuperToken, SuperAppDefinitions } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 import { IConstantFlowAgreementV1 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
@@ -21,8 +22,10 @@ contract Flower is ERC721, SuperAppBase {
     error Unauthorized();
 
     // CFA library setup
-    using CFAv1Library for CFAv1Library.InitData;
-    CFAv1Library.InitData public cfaLib;
+    // using CFAv1Library for CFAv1Library.InitData;
+    // CFAv1Library.InitData public cfaLib;
+
+    using SuperTokenV1Library for ISuperToken;
 
     struct FlowerProfile {
         // timestamp where a flower's flow was last modified - created, updated, or deleted to contract
@@ -65,10 +68,10 @@ contract Flower is ERC721, SuperAppBase {
         "FLWR"  
     ) {
 
-        cfaLib = CFAv1Library.InitData({
-            host: _host,
-            cfa: _cfa
-        });
+        // cfaLib = CFAv1Library.InitData({
+        //     host: _host,
+        //     cfa: _cfa
+        // });
 
         stageAmounts = _stageAmounts;
         acceptedToken = _acceptedToken;
@@ -76,7 +79,7 @@ contract Flower is ERC721, SuperAppBase {
         // Registers Super App, indicating it is the final level (it cannot stream to other super
         // apps), and that the `before*` callbacks should not be called on this contract, only the
         // `after*` callbacks.
-        cfaLib.host.registerApp(
+        _host.registerApp(
             SuperAppDefinitions.APP_LEVEL_FINAL |
             SuperAppDefinitions.BEFORE_AGREEMENT_CREATED_NOOP |
             SuperAppDefinitions.BEFORE_AGREEMENT_UPDATED_NOOP |
@@ -89,13 +92,15 @@ contract Flower is ERC721, SuperAppBase {
     // MODIFIERS
 
     modifier onlyHost() {
-        if ( msg.sender != address(cfaLib.host) ) revert Unauthorized();
+        //can call getHost() on super token to get address of host
+        if ( msg.sender != acceptedToken.getHost()) revert Unauthorized();
         _;
     }
 
     modifier onlyExpected(ISuperToken superToken, address agreementClass) {
         if ( superToken != acceptedToken ) revert InvalidToken();
-        if ( agreementClass != address(cfaLib.cfa) ) revert InvalidAgreement();
+        IConstantFlowAgreement _cfa = ISuperfluid(acceptedToken.getHost()).getAgreementClass(CFA_ID);
+        if ( agreementClass != address(_cfa) ) revert InvalidAgreement();
         _;
     }
 
@@ -196,12 +201,13 @@ contract Flower is ERC721, SuperAppBase {
         // update streamedSoFarAtLatestMod to current value of streamedSoFar 
         flowerProfiles[tokenId].streamedSoFarAtLatestMod = streamedSoFar(tokenId);
         
+        flowerProfiles[tokenId].flowRate = acceptedToken.getFlowRate(flowSender, address(this));
         // set flowRate to new flow rate
-        (,flowerProfiles[tokenId].flowRate,,) = cfaLib.cfa.getFlow(
-            acceptedToken,  // super token being streamed
-            flowSender,     // sender
-            address(this)   // receiver
-        );
+        // (,flowerProfiles[tokenId].flowRate,,) = cfaLib.cfa.getFlow(
+        //     acceptedToken,  // super token being streamed
+        //     flowSender,     // sender
+        //     address(this)   // receiver
+        // );
 
         // set latestFlowMod to current time stamp
         flowerProfiles[tokenId].latestFlowMod = block.timestamp;
@@ -227,10 +233,9 @@ contract Flower is ERC721, SuperAppBase {
             if ( flowerOwned[to] != 0 ) revert InvalidTransfer();
 
             // cancel the flower sender's stream
-            cfaLib.deleteFlow(        
+            acceptedToken.deleteFlow(        
                 from,
-                address(this),
-                acceptedToken
+                address(this)
             );
 
             // update the flower's info
