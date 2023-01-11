@@ -36,7 +36,7 @@ contract Flower is ERC721, SuperAppBase {
     /// @dev mapping flower nft ids to flower profile info
     mapping(uint256 => FlowerProfile) public flowerProfiles;
 
-    /// @dev mapping of accounts to their flowers
+    /// @dev mapping of accounts to their flowers (ERC721 gives you token IDs to owners in _owners)
     mapping(address => uint256) public flowerOwned;
 
     /// @dev metadata for each stage of growth for flower NFTs
@@ -118,9 +118,6 @@ contract Flower is ERC721, SuperAppBase {
     {
         // get flow sender
         (address flowSender, ) = abi.decode(agreementData, (address, address));
-
-        // get token id for flow sender
-        // uint256 _tokenId = flowerOwned[flowSender];
 
         // if the flow sender DOESN'T already have a flower
         if ( flowerOwned[flowSender] == 0 ) {

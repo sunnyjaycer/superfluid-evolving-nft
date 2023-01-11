@@ -28,21 +28,12 @@ async function main() {
         superToken: deployedContracts.superWater.address,
         sender: signer.address,
         receiver: deployedContracts.flower.address,
-        flowRate: "55555555555555550" // 1000 WATERx/5 hours
-    })
+        flowRate: "33333333333333332" // 10 WATERx / 5 min
+    });
     let tx = await createFlowOp.exec(signer);
     await tx.wait();
 
     console.log("Stream successfully created!")
-
-    // console.log(`Now streaming ${
-    //     ( await sf.cfaV1.getFlow(            
-    //         deployedContracts.superWater.address,
-    //         signer.address,
-    //         deployedContracts.flower.address,
-    //         signer
-    //     ) ).flowRate
-    // } wei per second to the Flower contract`)
 
 }
 

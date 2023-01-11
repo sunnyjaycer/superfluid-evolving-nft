@@ -5,14 +5,13 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
-const waterABI = require("../artifacts/contracts/TestToken.sol/TestToken.json");
+const waterABI = require("../artifacts/contracts/utils/TestToken.sol/TestToken.json");
 const superWaterABI = require("../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol/ISuperToken.json")
 
 async function main() {
 
   // Setting up network object - this is set as the goerli url, but can be changed to reflect your RPC URL and network of choice
   const url = `${process.env.ALCHEMY_GOERLI_URL}`;
-  const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
   const waterAddress = "0xE99Eecb5D6fCaE4f091Ea4d5fED613843939272A";
   const waterXAddress = "0x875Fa8aCaAe9fD57De678f9e52dF324B6279FF58";
