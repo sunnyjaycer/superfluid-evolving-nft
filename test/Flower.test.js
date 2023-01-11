@@ -2,7 +2,7 @@ const { expect } = require("chai")
 const { ethers } = require("hardhat")
 const { time, mine } = require("@nomicfoundation/hardhat-network-helpers");
 const { Framework } = require("@superfluid-finance/sdk-core")
-const frameworkDeployer = require("@superfluid-finance/ethereum-contracts/scripts/deploy-test-framework")
+const { deployTestFramework } = require("@superfluid-finance/ethereum-contracts/dev-scripts/deploy-test-framework");
 const TestToken = require("@superfluid-finance/ethereum-contracts/build/contracts/TestToken.json")
 
 let sfDeployer
@@ -25,7 +25,7 @@ before(async function () {
     // get hardhat accounts
     ;[owner, alice, bob] = await ethers.getSigners()
 
-    sfDeployer = await frameworkDeployer.deployTestFramework()
+    sfDeployer = await deployTestFramework();
 
     // GETTING SUPERFLUID FRAMEWORK SET UP
 
@@ -82,16 +82,20 @@ before(async function () {
     console.log("Host", sf.settings.config.hostAddress);
     console.log("CFA ", sf.settings.config.cfaV1Address);
 
+    // flower = await FlowerFactory.deploy(
+    //     [1000, 1000, 1000],
+    //     daix.address,
+    //     sf.settings.config.hostAddress,
+    //     sf.settings.config.cfaV1Address
+    // )
     flower = await FlowerFactory.deploy(
         [1000, 1000, 1000],
-        daix.address,
-        sf.settings.config.hostAddress,
-        sf.settings.config.cfaV1Address
+        daix.address
     )
     await flower.deployed()
 })
 
-describe("Money Router", function () {
+describe("Flower Contract", function () {
 
     it("Creating a stream, token is minted", async function () {
 
@@ -117,7 +121,7 @@ describe("Money Router", function () {
         // Verify that metadata is [0]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant1.png");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant1.json");
 
     });
 
@@ -190,7 +194,7 @@ describe("Money Router", function () {
         // Verify that metadata is still [0]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant1.png");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant1.json");
 
     });
 
@@ -205,7 +209,7 @@ describe("Money Router", function () {
         // Verify that metadata is now [1]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant2.png");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant2.json");
 
         // speed forward another 1000 seconds
         await time.increaseTo( trackedTime + 1000 );
@@ -214,7 +218,7 @@ describe("Money Router", function () {
         // Verify that metadata is now [2]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant3.png");
+        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
 
         // speed forward another 10000 seconds
         await time.increaseTo( trackedTime + 10000 );
@@ -222,7 +226,7 @@ describe("Money Router", function () {
         // Verify that metadata is still [2]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant3.png");
+        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
 
     })
 
@@ -287,7 +291,7 @@ describe("Money Router", function () {
         // Verify that metadata is still [2]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant3.png");
+        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
 
     });
 
@@ -310,7 +314,7 @@ describe("Money Router", function () {
         // Verify that metadata is [0]
         expect(
             await flower.tokenURI("2")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant1.png");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant1.json");
 
     });
 
@@ -344,7 +348,7 @@ describe("Money Router", function () {
         // Verify that metadata is [0], Print its metadata
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant1.png");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant1.json");
         console.log(await flower.tokenURI("1"));
 
         // Fastforward 1000 sec
@@ -354,7 +358,7 @@ describe("Money Router", function () {
         // Verify that metadata is [1], Print its metadata
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant2.png");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant2.json");
         console.log(await flower.tokenURI("1"));
 
         // Fastforward 1000 sec
@@ -364,7 +368,7 @@ describe("Money Router", function () {
         // Verify that metadata is [2], Print its metadata
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant3.png");
+        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
         console.log(await flower.tokenURI("1"));
 
         // Fastforward 1000 sec
@@ -374,7 +378,7 @@ describe("Money Router", function () {
         // Verify that metadata is [2], Print its metadata
         expect(
             await flower.tokenURI("1")
-        ).to.eq("https://ipfs.io/ipfs/Qmd4Sp9oSFMzFEuzwUQdihFMd3sYKQpoy4D8ckYd6bPVeC/plant3.png");
+        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
         console.log(await flower.tokenURI("1"));
 
 

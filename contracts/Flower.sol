@@ -5,7 +5,6 @@ pragma solidity 0.8.13;
 import "hardhat/console.sol";
 
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import { CFAv1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol";
 import { SuperTokenV1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
 import { SuperAppBase } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
 import { ISuperfluid, ISuperToken, SuperAppDefinitions } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
@@ -21,10 +20,7 @@ contract Flower is ERC721, SuperAppBase {
     error InvalidTransfer();
     error Unauthorized();
 
-    // CFA library setup
-    // using CFAv1Library for CFAv1Library.InitData;
-    // CFAv1Library.InitData public cfaLib;
-
+    /// @dev super token library
     using SuperTokenV1Library for ISuperToken;
 
     struct FlowerProfile {
@@ -46,7 +42,7 @@ contract Flower is ERC721, SuperAppBase {
     string[3] public stageMetadatas = [
         "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant1.json",
         "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant2.json",
-        "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json"
+        "ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json"
     ];
 
     /// @dev how much seconds must pass for each stage of growth
@@ -60,18 +56,12 @@ contract Flower is ERC721, SuperAppBase {
 
     constructor(
         uint256[3] memory _stageAmounts,
-        ISuperToken _acceptedToken,
-        ISuperfluid _host,
-        IConstantFlowAgreementV1 _cfa
+        ISuperToken _acceptedToken
     ) ERC721(
         "Flower",
         "FLWR"  
     ) {
 
-        // cfaLib = CFAv1Library.InitData({
-        //     host: _host,
-        //     cfa: _cfa
-        // });
 
         stageAmounts = _stageAmounts;
         acceptedToken = _acceptedToken;
@@ -79,7 +69,7 @@ contract Flower is ERC721, SuperAppBase {
         // Registers Super App, indicating it is the final level (it cannot stream to other super
         // apps), and that the `before*` callbacks should not be called on this contract, only the
         // `after*` callbacks.
-        _host.registerApp(
+        ISuperfluid(acceptedToken.getHost()).registerApp(
             SuperAppDefinitions.APP_LEVEL_FINAL |
             SuperAppDefinitions.BEFORE_AGREEMENT_CREATED_NOOP |
             SuperAppDefinitions.BEFORE_AGREEMENT_UPDATED_NOOP |
@@ -99,7 +89,7 @@ contract Flower is ERC721, SuperAppBase {
 
     modifier onlyExpected(ISuperToken superToken, address agreementClass) {
         if ( superToken != acceptedToken ) revert InvalidToken();
-        IConstantFlowAgreement _cfa = ISuperfluid(acceptedToken.getHost()).getAgreementClass(CFA_ID);
+        IConstantFlowAgreementV1 _cfa = IConstantFlowAgreementV1(address(ISuperfluid(acceptedToken.getHost()).getAgreementClass(CFA_ID)));
         if ( agreementClass != address(_cfa) ) revert InvalidAgreement();
         _;
     }
