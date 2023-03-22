@@ -36,7 +36,7 @@ Addresses can only have one Flower NFT at once. If you transfer your Flower to a
 4. Stream the WATERx Super Tokens to the Flower contract with `npx hardhat run scripts/streamWater.js --network goerli`
 5. Go to [Opensea's Testnet App](https://testnets.opensea.io/) and search your address.
    - You should see an "Evolving Flower NFT". That's it! You are now watering the NFT. Note down its token ID
-6. After 5 minutes, go to [this NFT Viewer](https://www.nftviewer.xyz/), click into the "Smart Contract" page. Then, enter the contract address `0xEbEf99eE03571a5957E5d6ee4061940c760b0515` and your token ID.
+6. After 5 minutes, go to [this NFT Viewer](https://www.nftviewer.xyz/), click into the "Smart Contract" page. Then, enter the contract address `npx hardhat verify --network goerli --constructor-args arguments-flower-goerli.js 0x015b0C429B9cC32AB8470c3cb3E11AB548cBe996` and your token ID.
 
 You'll see the NFT image has changed to show a more grown up flower! If you wait another 5 minutes, you'll see it grows again.
 

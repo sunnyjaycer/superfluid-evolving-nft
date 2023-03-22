@@ -42,10 +42,10 @@ contract Flower is ERC721, SuperAppBase {
     string[3] public stageMetadatas = [
         "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant1.json",
         "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant2.json",
-        "ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json"
+        "ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json"
     ];
 
-    /// @dev how much seconds must pass for each stage of growth
+    /// @dev how much tokens must accumulate must pass for each stage of growth
     uint256[3] public stageAmounts;
 
     /// @dev current token ID
@@ -192,12 +192,6 @@ contract Flower is ERC721, SuperAppBase {
         flowerProfiles[tokenId].streamedSoFarAtLatestMod = streamedSoFar(tokenId);
         
         flowerProfiles[tokenId].flowRate = acceptedToken.getFlowRate(flowSender, address(this));
-        // set flowRate to new flow rate
-        // (,flowerProfiles[tokenId].flowRate,,) = cfaLib.cfa.getFlow(
-        //     acceptedToken,  // super token being streamed
-        //     flowSender,     // sender
-        //     address(this)   // receiver
-        // );
 
         // set latestFlowMod to current time stamp
         flowerProfiles[tokenId].latestFlowMod = block.timestamp;
@@ -223,10 +217,12 @@ contract Flower is ERC721, SuperAppBase {
             if ( flowerOwned[to] != 0 ) revert InvalidTransfer();
 
             // cancel the flower sender's stream
-            acceptedToken.deleteFlow(        
-                from,
-                address(this)
-            );
+            if (acceptedToken.getFlowRate(from, address(this)) != 0) {
+                acceptedToken.deleteFlow(        
+                    from,
+                    address(this)
+                );
+            }
 
             // update the flower's info
             flowerUpdate(from, firstTokenId);

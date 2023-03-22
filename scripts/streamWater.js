@@ -28,7 +28,7 @@ async function main() {
         superToken: deployedContracts.superWater.address,
         sender: signer.address,
         receiver: deployedContracts.flower.address,
-        flowRate: "33333333333333332" // 10 WATERx / 5 min
+        flowRate: "83333333333333330" // 10 WATERx / 2 min
     });
     let tx = await createFlowOp.exec(signer);
     await tx.wait();

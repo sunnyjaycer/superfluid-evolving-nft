@@ -11,10 +11,8 @@ const cfa = "0xEd6BcbF6907D4feEEe8a8875543249bEa9D308E8";
 
 module.exports = [
     stageAmounts,
-    acceptedToken,
-    host,
-    cfa
+    acceptedToken
 ];
 
 //// npx hardhat verify --network goerli --constructor-args arguments-flower-goerli.js [contractaddress]
-//// npx hardhat verify --network goerli --constructor-args arguments-flower-goerli.js 0xEbEf99eE03571a5957E5d6ee4061940c760b0515
+//// npx hardhat verify --network goerli --constructor-args arguments-flower-goerli.js 0x89682A8fA9cA0888dD1F5C0FeB7ADf0029C18Ff7

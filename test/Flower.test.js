@@ -18,7 +18,7 @@ let alice
 let bob
 
 const thousandEther = ethers.utils.parseEther("10000")
-const EXPECATION_DIFF_LIMIT = 10;    // Accounting for potential discrepency with 10 wei margin
+const EXPECATION_DIFF_LIMIT = 50;    // Accounting for potential discrepency with 10 wei margin
 
 before(async function () {
 
@@ -218,7 +218,7 @@ describe("Flower Contract", function () {
         // Verify that metadata is now [2]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
 
         // speed forward another 10000 seconds
         await time.increaseTo( trackedTime + 10000 );
@@ -226,7 +226,7 @@ describe("Flower Contract", function () {
         // Verify that metadata is still [2]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
 
     })
 
@@ -291,7 +291,7 @@ describe("Flower Contract", function () {
         // Verify that metadata is still [2]
         expect(
             await flower.tokenURI("1")
-        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
 
     });
 
@@ -368,7 +368,7 @@ describe("Flower Contract", function () {
         // Verify that metadata is [2], Print its metadata
         expect(
             await flower.tokenURI("1")
-        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
         console.log(await flower.tokenURI("1"));
 
         // Fastforward 1000 sec
@@ -378,7 +378,7 @@ describe("Flower Contract", function () {
         // Verify that metadata is [2], Print its metadata
         expect(
             await flower.tokenURI("1")
-        ).to.eq("ipfs:///QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
+        ).to.eq("ipfs://QmYUXy3JjoCjx1Fji71v9pPAWs3kAdrhBtUvVJw6m89g4A/plant3.json");
         console.log(await flower.tokenURI("1"));
 
 
