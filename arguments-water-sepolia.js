@@ -15,6 +15,6 @@ module.exports = [
     mintLimit
 ];
 
-// npx hardhat verify --network sepolia --constructor-args arguments-testtoken-sepolia.js [contractAddress]
+// npx hardhat verify --network sepolia --constructor-args arguments-water-sepolia.js [contractAddress]
 
-// npx hardhat verify --network sepolia --constructor-args arguments-testtoken-sepolia.js 0x875Fa8aCaAe9fD57De678f9e52dF324B6279FF58
+// npx hardhat verify --network sepolia --constructor-args arguments-water-sepolia.js 0x875Fa8aCaAe9fD57De678f9e52dF324B6279FF58
