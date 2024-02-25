@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 const flowerABI = require("../../artifacts/contracts/Flower.sol/Flower.json");
-const waterABI = require("../../artifacts/contracts/utils/TestToken.sol/TestToken.json");
+const waterABI = require("../../artifacts/contracts/utils/Water.sol/Water.json");
 const superWaterABI = require("../../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol/ISuperToken.json")
 
 const flowerAddress = "0x015b0C429B9cC32AB8470c3cb3E11AB548cBe996"

@@ -5,7 +5,7 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
-const waterABI = require("../artifacts/contracts/utils/TestToken.sol/TestToken.json");
+const waterABI = require("../artifacts/contracts/utils/Water.sol/Water.json");
 const superWaterABI = require("../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol/ISuperToken.json")
 
 async function main() {
