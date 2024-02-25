@@ -10,8 +10,8 @@ module.exports = {
     hardhat : {
 
     },
-    goerli : {
-      url: `${process.env.ALCHEMY_GOERLI_URL}`,
+    sepolia : {
+      url: `${process.env.ALCHEMY_SEPOLIA_URL}`,
       accounts: [process.env.PRIVATE_KEY],
       blockGasLimit: 20000000,
       gasPrice: 55000000000 // 35 Gwei
@@ -22,7 +22,7 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      goerli: process.env.ETHERSCAN_KEY ?? '',
+      sepolia: process.env.ETHERSCAN_KEY ?? '',
     },
   },
 };

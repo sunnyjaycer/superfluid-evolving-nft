@@ -10,8 +10,8 @@ const superWaterABI = require("../artifacts/@superfluid-finance/ethereum-contrac
 
 async function main() {
 
-  // Setting up network object - this is set as the goerli url, but can be changed to reflect your RPC URL and network of choice
-  const url = `${process.env.ALCHEMY_GOERLI_URL}`;
+  // Setting up network object - this is set as the sepolia url, but can be changed to reflect your RPC URL and network of choice
+  const url = `${process.env.ALCHEMY_SEPOLIA_URL}`;
 
   const waterAddress = "0xE99Eecb5D6fCaE4f091Ea4d5fED613843939272A";
   const waterXAddress = "0x875Fa8aCaAe9fD57De678f9e52dF324B6279FF58";

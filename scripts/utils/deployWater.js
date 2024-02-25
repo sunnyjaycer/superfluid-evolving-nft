@@ -31,4 +31,4 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// https://goerli.etherscan.io/address/0xE99Eecb5D6fCaE4f091Ea4d5fED613843939272A
+// https://sepolia.etherscan.io/address/0xE99Eecb5D6fCaE4f091Ea4d5fED613843939272A
