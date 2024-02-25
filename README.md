@@ -27,11 +27,16 @@ The Flower contract reacts and mints a Flower NFT to your address. As your strea
 
 Addresses can only have one Flower NFT at once. If you transfer your Flower to another address (that doesn't already have a Flower), you will have your `acceptedToken` stream automatically cancelled if you haven't already done so. The metadata on the NFT will be unchanged (not reset to the first image) after the transfer.
 
-## Try it out live on Sepolia Testnet 🎬
+## Deploy it on Sepolia Testnet 🎬
 
 1. Clone the repo and build with `npm install`
 2. Create a `.env` file and fill out the suggested variables from `.env.template`
    - Make sure the wallet you're providing a private key for has some Sepolia ETH in it. This wallet will be receiving the Flower NFT!
+3. Deploy WATER ERC20 Token with `npx hardhat run scripts/utils/deployWater.js --network sepolia`
+4. Create the SuperToken WATERx from Token WATER using the Superfluid Wrapper Factory.
+5. Update WATERx contract address in scripts/deployFlower.js
+3. Deploy FLOWER ERC721 Token with `npx hardhat run scripts/deployFlower.js --network sepolia`
+5. Update contract addresses in scripts/utils/deployedContracts.js
 3. Mint some WATERx Super Tokens with `npx hardhat run scripts/mintSuperWater.js --network sepolia`
 4. Stream the WATERx Super Tokens to the Flower contract with `npx hardhat run scripts/streamWater.js --network sepolia`
 5. Go to [Opensea's Testnet App](https://testnets.opensea.io/) and search your address.
