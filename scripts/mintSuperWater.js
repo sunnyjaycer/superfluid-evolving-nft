@@ -19,7 +19,7 @@ async function main() {
 
   const signer = await hre.ethers.getSigner();  // receives minted WATER tokens
 
-  console.log(`Minting ${ethers.utils.formatUnits(mintAmount)} WATERx to ${signer.address} on Goerli`)
+  console.log(`Minting ${ethers.utils.formatUnits(mintAmount)} WATERx to ${signer.address} on Sepolia`)
 
 
   const water = await hre.ethers.getContractAt( waterABI.abi, waterAddress );
