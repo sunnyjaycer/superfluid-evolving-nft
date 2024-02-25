@@ -14,5 +14,5 @@ module.exports = [
     acceptedToken
 ];
 
-//// npx hardhat verify --network goerli --constructor-args arguments-flower-goerli.js [contractaddress]
-//// npx hardhat verify --network goerli --constructor-args arguments-flower-goerli.js 0x89682A8fA9cA0888dD1F5C0FeB7ADf0029C18Ff7
+//// npx hardhat verify --network sepolia --constructor-args arguments-flower-sepolia.js [contractaddress]
+//// npx hardhat verify --network sepolia --constructor-args arguments-flower-sepolia.js 0x89682A8fA9cA0888dD1F5C0FeB7ADf0029C18Ff7

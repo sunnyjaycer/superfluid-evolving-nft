@@ -32,4 +32,4 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// https://goerli.etherscan.io/address/0x4ac88E3FA431a6DCbDa6e20c9Be28e40704117f8#code
+// https://sepolia.etherscan.io/address/0x4ac88E3FA431a6DCbDa6e20c9Be28e40704117f8#code

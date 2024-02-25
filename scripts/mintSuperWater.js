@@ -5,21 +5,21 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
-const waterABI = require("../artifacts/contracts/utils/TestToken.sol/TestToken.json");
+const waterABI = require("../artifacts/contracts/utils/Water.sol/Water.json");
 const superWaterABI = require("../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol/ISuperToken.json")
 
 async function main() {
 
-  // Setting up network object - this is set as the goerli url, but can be changed to reflect your RPC URL and network of choice
-  const url = `${process.env.ALCHEMY_GOERLI_URL}`;
+  // Setting up network object - this is set as the sepolia url, but can be changed to reflect your RPC URL and network of choice
+  const url = `${process.env.ALCHEMY_SEPOLIA_URL}`;
 
-  const waterAddress = "0xE99Eecb5D6fCaE4f091Ea4d5fED613843939272A";
+  const waterAddress = "0xe9D358a664d93AbA845CD5d614D2C3363a0ba6A7";
   const waterXAddress = "0x875Fa8aCaAe9fD57De678f9e52dF324B6279FF58";
   const mintAmount = ethers.utils.parseEther("10000000000");                   
 
   const signer = await hre.ethers.getSigner();  // receives minted WATER tokens
 
-  console.log(`Minting ${ethers.utils.formatUnits(mintAmount)} WATERx to ${signer.address} on Goerli`)
+  console.log(`Minting ${ethers.utils.formatUnits(mintAmount)} WATERx to ${signer.address} on Sepolia`)
 
 
   const water = await hre.ethers.getContractAt( waterABI.abi, waterAddress );

@@ -11,7 +11,7 @@ const { ethers } = require("hardhat");
 
 async function main() {
 
-    const url = `${process.env.ALCHEMY_GOERLI_URL}`;
+    const url = `${process.env.ALCHEMY_SEPOLIA_URL}`;
     const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
     // const network = await customHttpProvider.getNetwork();
 

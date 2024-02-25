@@ -3,7 +3,7 @@ const { ethers } = require("hardhat")
 const { time, mine } = require("@nomicfoundation/hardhat-network-helpers");
 const { Framework } = require("@superfluid-finance/sdk-core")
 const { deployTestFramework } = require("@superfluid-finance/ethereum-contracts/dev-scripts/deploy-test-framework");
-const TestToken = require("@superfluid-finance/ethereum-contracts/build/contracts/TestToken.json")
+const Water = require("@superfluid-finance/ethereum-contracts/build/contracts/Water.json")
 
 let sfDeployer
 let contractsFramework
@@ -51,7 +51,7 @@ before(async function () {
     daix = await sf.loadSuperToken("fDAIx")
     dai = new ethers.Contract(
         daix.underlyingToken.address,
-        TestToken.abi,
+        Water.abi,
         owner
     )
     // minting test DAI

@@ -8,7 +8,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * @author Superfluid
  * @dev Test ERC20 token that allows any one mint new tokens.
  */
-contract TestToken is ERC20 {
+contract Water is ERC20 {
     uint256 private immutable _mintLimit;
     uint8 private _decimals;
 

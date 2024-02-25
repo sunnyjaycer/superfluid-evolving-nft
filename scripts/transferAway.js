@@ -10,7 +10,7 @@ const banishAddress = "0x455E5AA18469bC6ccEF49594645666C587A3a71B";
 
 async function main() {
 
-    const url = `${process.env.ALCHEMY_GOERLI_URL}`;
+    const url = `${process.env.ALCHEMY_SEPOLIA_URL}`;
     const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
     // const network = await customHttpProvider.getNetwork();
 
