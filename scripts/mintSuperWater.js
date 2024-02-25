@@ -13,7 +13,7 @@ async function main() {
   // Setting up network object - this is set as the sepolia url, but can be changed to reflect your RPC URL and network of choice
   const url = `${process.env.ALCHEMY_SEPOLIA_URL}`;
 
-  const waterAddress = "0xE99Eecb5D6fCaE4f091Ea4d5fED613843939272A";
+  const waterAddress = "0xe9D358a664d93AbA845CD5d614D2C3363a0ba6A7";
   const waterXAddress = "0x875Fa8aCaAe9fD57De678f9e52dF324B6279FF58";
   const mintAmount = ethers.utils.parseEther("10000000000");                   
 
